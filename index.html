@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Simple SNAP Benefits Calculator</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/main.css" rel="stylesheet">
+	
+	<! -- Knockout -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout-validation/2.0.3/knockout.validation.min.js"></script>    
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin">
+        <h3 class="form-signin-heading">SNAP Benefits Calculator</h2>
+
+	        <label for="inputEmail">Monthly Income</label>
+	        <input type="text" 
+	        		id="monthlyIncomeInput" 
+	        		class="form-control" 
+	        		placeholder="Enter monthly income here" 
+	        		data-bind="textInput: monthlyIncome" 
+	        		autofocus>
+
+	        <br />
+	        <br />
+
+			<label for="inputEmail">Number of People in Household</label>
+	        <input type="text" id="numberOfPeopleInHouseholdLabel" class="form-control" data-bind="textInput: peopleInHousehold" >	        
+
+	        <br />
+	        <br />
+        
+	        <label  >Maximum SNAP Benefits</label>
+	        <input type="input" id="maxSnapBenefitsField" class="form-control" data-bind="value: formattedMaxBenefits()" disabled>	        
+        
+	        <br />
+	        <br />
+        
+	        <label for="adjustedSnapBenefits" >Income Adjusted SNAP Benefits</label>
+	        <input type="adjustedValue" id="adjustedSnapBenefitsField" class="form-control" data-bind="value: formattedAdjustedAllotment()" disabled>
+        
+      
+
+			<label>
+	      		For more information and explanation of benefits, click <a href="http://www.fns.usda.gov/snap/how-much-could-i-receive" target="_blank">here</a>.
+      		</label>
+
+      		<label class="text-small text-italic">Page last updated 2015-10-10</label>
+
+      </form>
+
+    </div> <!-- /container -->
+
+
+	<script type="text/javascript">
+	
+		var snapMaximumAllotmentLookup = {
+			1: 194,
+			2: 357,
+			3: 511,
+			4: 649,
+			5: 771,
+			6: 925,
+			7: 1022,
+			8: 1169,
+			'AdditionalPerson': 146
+		};
+
+		function viewModel(){
+			var self = this;
+
+			this.monthlyIncome = ko.observable().extend({
+				//required: true,
+				number: true,
+				min: 0
+			});
+
+			this.peopleInHousehold = ko.observable(2).extend({
+				number: true,
+				min: 1
+			});
+
+			this.snapMaximumAllotment = ko.pureComputed({
+				read: function(){
+					var allotment = 0;
+
+					if (self.peopleInHousehold() > 8){
+						var additionPeople = self.peopleInHousehold() - 8;
+						allotment = snapMaximumAllotmentLookup[8] + (snapMaximumAllotmentLookup['AdditionalPerson'] * additionPeople);
+					} else {
+						allotment = snapMaximumAllotmentLookup[self.peopleInHousehold()];
+					}
+
+					return allotment;
+				}
+			});
+
+			this.adjustedSnapBenefits = ko.pureComputed({
+				read: function(){
+
+						var benefits = 0;
+
+						if (this.monthlyIncome() >= 0){
+							benefits = (self.snapMaximumAllotment() - (this.monthlyIncome() * 0.3));
+							benefits = (benefits > 0) ? benefits : 0;
+						} else if (this.monthlyIncome() == undefined){
+							benefits = self.snapMaximumAllotment();
+						}
+
+						return benefits;
+				},
+				owner: this
+			});
+
+			this.formattedMaxBenefits = ko.pureComputed({
+				read: function(){
+					return formatUsd(self.snapMaximumAllotment());
+				},
+				owner: this
+			});
+
+			this.formattedAdjustedAllotment = ko.pureComputed({
+				read: function(){
+					return formatUsd(self.adjustedSnapBenefits());
+				},
+				owner: this
+			});
+		}	
+
+		ko.applyBindings(new viewModel());
+
+		function formatUsd(numericToFormat){
+			return '$' + numericToFormat.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+	
+	</script>    
+
+	<!-- Piwik -->
+	<script type="text/javascript">
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  (function() {
+	    var u="//alecpapierniak.com/piwik/";
+	    _paq.push(['setTrackerUrl', u+'piwik.php']);
+	    _paq.push(['setSiteId', 1]);
+	    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+	    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	</script>
+	<noscript><p><img src="//alecpapierniak.com/piwik/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+	<!-- End Piwik Code -->
+
+  </body>
+</html>

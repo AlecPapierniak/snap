@@ -8,7 +8,7 @@
 		6: 925,
 		7: 1022,
 		8: 1169,
-		'AdditionalPerson': 146
+		PerAdditionalPerson: 146
 	};
 
 	function viewModel(){
@@ -20,7 +20,7 @@
 			min: 0
 		});
 
-		this.peopleInHousehold = ko.observable(1).extend({
+		this.peopleInHousehold = ko.observable(2).extend({
 			number: true,
 			min: 1
 		});
@@ -31,7 +31,7 @@
 
 				if (self.peopleInHousehold() > 8){
 					var additionPeople = self.peopleInHousehold() - 8;
-					allotment = snapMaximumAllotmentLookup[8] + (snapMaximumAllotmentLookup['AdditionalPerson'] * additionPeople);
+					allotment = snapMaximumAllotmentLookup[8] + (snapMaximumAllotmentLookup.PerAdditionalPerson * additionPeople);
 				} else {
 					allotment = snapMaximumAllotmentLookup[self.peopleInHousehold()];
 				}
@@ -68,11 +68,11 @@
 			},
 			owner: this
 		});
-	}	
+	}
 
 	ko.applyBindings(new viewModel());
 
 	function formatUsd(numericToFormat){
 		return '$' + numericToFormat.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	};	
+	};
 }());

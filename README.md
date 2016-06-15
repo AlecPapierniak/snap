@@ -1,1 +1,1 @@
-README!
+This is a simple SNAP calculator using knockout

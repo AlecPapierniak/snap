@@ -51,22 +51,19 @@
 					}
 
 					return benefits;
-			},
-			owner: self
+			}
 		});
 
 		self.formattedMaxBenefits = ko.pureComputed({
 			read: function(){
 				return formatUsd(self.snapMaximumAllotment());
-			},
-			owner: self
+			}
 		});
 
 		self.formattedAdjustedAllotment = ko.pureComputed({
 			read: function(){
 				return formatUsd(self.adjustedSnapBenefits());
-			},
-			owner: self
+			}
 		});
 	}
 

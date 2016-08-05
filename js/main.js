@@ -14,18 +14,18 @@
 	function viewModel(){
 		var self = this;
 
-		this.monthlyIncome = ko.observable().extend({
+		self.monthlyIncome = ko.observable().extend({
 			//required: true,
 			number: true,
 			min: 0
 		});
 
-		this.peopleInHousehold = ko.observable(2).extend({
+		self.peopleInHousehold = ko.observable(2).extend({
 			number: true,
 			min: 1
 		});
 
-		this.snapMaximumAllotment = ko.pureComputed({
+		self.snapMaximumAllotment = ko.pureComputed({
 			read: function(){
 				var allotment;
 
@@ -40,33 +40,33 @@
 			}
 		});
 
-		this.adjustedSnapBenefits = ko.pureComputed({
+		self.adjustedSnapBenefits = ko.pureComputed({
 			read: function(){
 
-					if (this.monthlyIncome() >= 0){
-						var benefits = (self.snapMaximumAllotment() - (this.monthlyIncome() * 0.3));
+					if (self.monthlyIncome() >= 0){
+						var benefits = (self.snapMaximumAllotment() - (self.monthlyIncome() * 0.3));
 						benefits = (benefits > 0) ? benefits : 0;
-					} else if (this.monthlyIncome() == undefined){
+					} else if (self.monthlyIncome() == undefined){
 						benefits = self.snapMaximumAllotment();
 					}
 
 					return benefits;
 			},
-			owner: this
+			owner: self
 		});
 
-		this.formattedMaxBenefits = ko.pureComputed({
+		self.formattedMaxBenefits = ko.pureComputed({
 			read: function(){
 				return formatUsd(self.snapMaximumAllotment());
 			},
-			owner: this
+			owner: self
 		});
 
-		this.formattedAdjustedAllotment = ko.pureComputed({
+		self.formattedAdjustedAllotment = ko.pureComputed({
 			read: function(){
 				return formatUsd(self.adjustedSnapBenefits());
 			},
-			owner: this
+			owner: self
 		});
 	}
 
